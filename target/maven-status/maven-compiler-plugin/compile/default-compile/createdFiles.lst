@@ -1,0 +1,6 @@
+base\BaseTest.class
+utils\JsonReader.class
+utils\ConfigReader.class
+base\DriverFactory.class
+pages\LoginPage.class
+utils\LocatorReader.class
