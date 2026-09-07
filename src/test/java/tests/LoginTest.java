@@ -3,53 +3,65 @@ package tests;
 import base.BaseTest;
 import pages.LoginPage;
 import org.testng.annotations.*;
-import utils.JsonReader;
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+import utils.JsonReader;
+import utils.ScreenShotUtils;
 import java.util.Map;
 
 public class LoginTest extends BaseTest {
 
     private Map<String, Map<String, String>> loginData;
-
-    @BeforeSuite
-    public void loadData() {
-        loginData = JsonReader.getLoginData("loginData.json");
-    }
+    private LoginPage loginPage;
 
     @BeforeClass
     public void start() {
-        setup(); // 🔹 initializes config, driverFactory, page
+        setup();
+        loginData = JsonReader.getLoginData("testdata/loginData.json");
+        loginPage = new LoginPage(page, config.getProperty("baseUrl"));
     }
 
-    // 🔹 This runs before every @Test method
-    @BeforeMethod
-    public void resetPage() {
-        page.navigate(config.getProperty("baseUrl"));
+    @Test(priority = 1)
+    public void testValidLogin() {
+        loginPage.navigateToLogin();
+        loginPage.enterUsername(loginData.get("valid").get("username"));
+        loginPage.enterPassword(loginData.get("valid").get("password"));
+        loginPage.clickLogin();
+
+        assertThat(loginPage.getDashboardHeader()).isVisible();
+        new ScreenShotUtils(page).takeScreenshotWithTimestamp("validLogin");
+
+        loginPage.logout();
     }
 
-    @DataProvider(name = "jsonDataProvider")
-    public Object[][] jsonDataProvider() {
-        return loginData.entrySet().stream()
-                .map(entry -> new Object[] {
-                        entry.getKey(),
-                        entry.getValue().get("username"),
-                        entry.getValue().get("password")
-                })
-                .toArray(Object[][]::new);
+    @DataProvider(name = "invalidDataProvider")
+    public Object[][] invalidDataProvider() {
+        return new Object[][] {
+            { "invalid", loginData.get("invalid").get("username"), loginData.get("invalid").get("password"), "invalid" },
+            { "emptyUsername", loginData.get("emptyUsername").get("username"), loginData.get("emptyUsername").get("password"), "emptyUsername" },
+            { "emptyPassword", loginData.get("emptyPassword").get("username"), loginData.get("emptyPassword").get("password"), "emptyPassword" }
+        };
     }
 
-    @Test(dataProvider = "jsonDataProvider")
-    public void testLogin(String type, String username, String password) {
-        LoginPage loginPage = new LoginPage(page);
+    @Test(dataProvider = "invalidDataProvider", priority = 2)
+    public void testInvalidScenarios(String type, String username, String password, String expectedKey) {
+        loginPage.navigateToLogin();
         loginPage.enterUsername(username);
         loginPage.enterPassword(password);
         loginPage.clickLogin();
 
-        if (type.equals("valid")) {
-            assertThat(loginPage.getDashboardHeader()).hasText("Dashboard");
-        } else {
-            assertThat(loginPage.getErrorMessage()).hasText("Invalid credentials");
-        }
+       // Check the correct error message
+    if (type.equals("invalid")) {
+
+        assertThat(loginPage.getErrorMessage())
+            .hasText(loginPage.getExpectedErrorText(expectedKey));
+
+    } else {
+
+        assertThat(loginPage.getRequiredError())
+            .hasText("Required");
+    }
+
+        new ScreenShotUtils(page).takeScreenshotWithTimestamp(type + "Login");
     }
 
     @AfterClass

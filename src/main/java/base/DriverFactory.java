@@ -32,6 +32,12 @@ public class DriverFactory {
         page = context.newPage();
         return page;
     }
+    public Page createNewPage() {
+    context = browser.newContext();
+    page = context.newPage();
+    return page;
+}
+
 
     public void closeBrowser() {
         context.close();

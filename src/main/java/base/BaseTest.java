@@ -11,7 +11,7 @@ public class BaseTest {
     public void setup() {
         config = new ConfigReader(); // assign to field
         driverFactory = new DriverFactory();
-        page = driverFactory.initBrowser(config.getProperty("browser"), true);
+        page = driverFactory.initBrowser(config.getProperty("browser"), false);
     }
 
     public void teardown() {
