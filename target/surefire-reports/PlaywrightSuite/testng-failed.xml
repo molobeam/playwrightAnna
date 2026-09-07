@@ -7,7 +7,7 @@
         <methods>
           <include name="stop"/>
           <include name="loadData"/>
-          <include name="testLogin" invocation-numbers="1"/>
+          <include name="testLogin" invocation-numbers="0 1"/>
           <include name="start"/>
         </methods>
       </class> <!-- tests.LoginTest -->

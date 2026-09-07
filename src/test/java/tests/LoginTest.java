@@ -18,7 +18,13 @@ public class LoginTest extends BaseTest {
 
     @BeforeClass
     public void start() {
-        setup(); // 🔹 initialize config, driverFactory, page
+        setup(); // 🔹 initializes config, driverFactory, page
+    }
+
+    // 🔹 This runs before every @Test method
+    @BeforeMethod
+    public void resetPage() {
+        page.navigate(config.getProperty("baseUrl"));
     }
 
     @DataProvider(name = "jsonDataProvider")
@@ -34,20 +40,15 @@ public class LoginTest extends BaseTest {
 
     @Test(dataProvider = "jsonDataProvider")
     public void testLogin(String type, String username, String password) {
-        System.out.println("▶ Running " + type + " login test with username: " + username);
-
         LoginPage loginPage = new LoginPage(page);
-        loginPage.navigateToLogin(config.getProperty("baseUrl"));
         loginPage.enterUsername(username);
         loginPage.enterPassword(password);
         loginPage.clickLogin();
 
         if (type.equals("valid")) {
             assertThat(loginPage.getDashboardHeader()).hasText("Dashboard");
-            System.out.println("✔ Valid login passed");
         } else {
             assertThat(loginPage.getErrorMessage()).hasText("Invalid credentials");
-            System.out.println("✘ Invalid login handled correctly");
         }
     }
 
