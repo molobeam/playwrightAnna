@@ -1,8 +1,0 @@
-base\BaseTest.class
-base\DriverFactory.class
-pages\LoginPage.class
-utils\JsonReader.class
-utils\ConfigReader.class
-utils\ScreenShotUtils.class
-utils\LocatorReader.class
-utils\WaitUtils.class
