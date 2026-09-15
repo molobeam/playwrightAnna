@@ -29,5 +29,12 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+      - name: Check test data
+        run: |
+          echo "Checking test data folder..."
+          ls -la src/test/resources/testdata/
+          echo "Checking all test resources..."
+          find src/test/resources -type f
+
       - name: Run tests
         run: mvn clean test
