@@ -34,7 +34,6 @@ jobs:
       - name: Run Tests
         run: mvn test
 
-      # Optional: Upload TestNG reports/screenshots as artifacts
       - name: Upload Test Reports
         uses: actions/upload-artifact@v3
         with:
