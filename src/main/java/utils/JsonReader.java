@@ -9,14 +9,18 @@ public class JsonReader {
 
     public static Map<String, Map<String, String>> getLoginData(String fileName) {
         ObjectMapper mapper = new ObjectMapper();
-        try (InputStream input = JsonReader.class.getClassLoader().getResourceAsStream(fileName)) {
+
+        try (InputStream input =
+                     JsonReader.class.getClassLoader().getResourceAsStream(fileName)) {
+
             if (input == null) {
                 throw new IOException(fileName + " not found in classpath");
             }
+
             return mapper.readValue(input, Map.class);
+
         } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+            throw new RuntimeException("Failed to load test data: " + fileName, e);
         }
     }
 }
